@@ -1,3 +1,4 @@
+// https://www.geeksforgeeks.org/quick-sort/ for quicksort methods
 #ifndef ANAGRAM_H
 #define ANAGRAM_H
 #include <stdio.h>
@@ -8,7 +9,7 @@
 // Store word with proper case and don't sort word
 struct StringList
 {
-	struct	StringList* Next; // hold pointer to next word
+	struct StringList* Next; // hold pointer to next word
 	char *Word; // char array, store actual word
 };
 
@@ -18,6 +19,10 @@ struct AnagramList
 	struct AnagramList *Next;
 	char *Anagram;
 };
+
+void quickSort(char *arr, int low, int high);
+int partition (char *arr, int low, int high);
+void swap(char* a, char* b);
 
 // Create new string list node
 struct StringList *MallocSList(char *word);
@@ -33,6 +38,9 @@ void PrintSList(FILE *file,struct StringList *node);
 
 // Return number of strings in the string list
 int SListCount(struct StringList *node);
+
+// return the word lowercased
+char *makeLower(char *word);
 
 // Create new anagram node, including string list node with word
 // will call MallocSList
