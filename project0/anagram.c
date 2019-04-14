@@ -1,22 +1,23 @@
+// Bethany Van Meter; bvanmet2; CIS 415 Project 0
+// this is my own work except:
+// the makefile and header file (from 415 class material)
 // https://www.geeksforgeeks.org/quick-sort/ for quicksort methods
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "anagram.h"
 
-// struct StringList
-// {
-// 	struct	StringList* Next; // hold pointer to next word
-// 	char *Word; // char array, store actual word
-// };
 
-// struct AnagramList
-// {
-// 	struct StringList *Words;
-// 	struct AnagramList *Next;
-// 	char *Anagram;
-// };
+// return the word lowercased
+char *makeLower(char *word) {
+	int i;
+	for(i = 0; i < strlen(word); i++){
+		word[i] = tolower(word[i]);
+	}
+	return word;
+}
 
+// swap two characters in a string
 void swap(char* a, char* b) 
 { 
     int t = *a; 
@@ -71,11 +72,14 @@ void quickSort(char *arr, int low, int high)
 // Create new string list node
 struct StringList *MallocSList(char *word) {
 	struct StringList *new_strli = NULL;
+	// allocate the stringlist node
 	new_strli = malloc(sizeof(struct StringList));
+
 	new_strli->Next = NULL;
-	//new_strli->Word = malloc(sizeof(char) * strlen(word));
+	// string duplicate for allocating and "copying" the word
 	new_strli->Word = strdup(word);
 
+	// if allocation doesn't work
 	if (new_strli == NULL) {
         perror("new_strli ERROR: ");
         exit(-1);
@@ -86,45 +90,48 @@ struct StringList *MallocSList(char *word) {
 
 // Append a string list node to the end/tail of a string list
 void AppendSList(struct StringList **head, struct StringList *node) {
-	// TODO: other checks
-	// **head is a pointer to a pointer of a StringList (so *head is the pointer address of the pointer)
-	// StringList * node is the node we are adding
+	// **head is a pointer to a pointer of a StringList
+	// node is the node we are adding
 
-	// Here new?
-	// while(*head != NULL) {
-	// 	head = &(*head)->Next;
-	// }
-	// *head = node;
-
-	struct StringList *current_node = *head; // get pointer to current head
+	struct StringList *current_node = *head; // get StringList* to head of "list"
+	// save pointer to the head to refer back a node
 	struct StringList *prev = *head; 
-	// TODO CHECK HERE to change to for loop for size?
+	// while there are still nodes to go through, keep going
 	while(current_node != NULL) {
 		prev = current_node;
 		current_node = current_node->Next;
 	}
+	// once we can't find another node, use prev to set next node
 	prev->Next = node;
 }
 
 // Free a string list, including all children
 void FreeSList(struct StringList **node) {
-	// TODO: Valgrind
-	// while current != NULL without losing next save into temp var
-	struct StringList * next, *current;
+	// save current and next pointers so once we free we can still reference the next one
+	struct StringList *next, *current;
 	current = *node;
+	// while there's another node, fill the word with 0's and free all aspects
 	while(current != NULL) {
+		// save next so we don't lose the reference after freeing
 		next = current->Next;
+		int i = 0;
+		// fill with 0's so no bad things happen
+		for(; i < strlen(current->Word); i++) {
+			current->Word[i] = '0';
+		}
 		free(current->Word);
 		free(current);
+		// set the current node as the previously saved next
 		current = next;
 	}
 }
 
 // Format output to a file according to spec
 void PrintSList(FILE *file, struct StringList *node) {
-	// TODO: PRINT/CHECK if file can open/write
+	// while there's another node, print the word with a tab and newline char
 	while(node != NULL) {
 		fprintf(file, "\t%s\n", node->Word);
+		// reach the next node
 		node = node->Next;
 	}
 }
@@ -132,8 +139,7 @@ void PrintSList(FILE *file, struct StringList *node) {
 // Return number of strings in the string list
 int SListCount(struct StringList *node) {
 	int count = 0;
-	// TODO: While stringlist is empty?
-	// while node != NULL
+	// while node isn't NULL, count once and go to next node
 	while(node != NULL) {
 		count += 1;
 		node = node->Next;
@@ -142,9 +148,9 @@ int SListCount(struct StringList *node) {
 }
 
 // Create new anagram node, including string list node with word
-// will call MallocSList
 struct AnagramList* MallocAList(char *word) {
 	struct AnagramList *new_anali = NULL;
+	// allocate a new anagramlist node
 	new_anali = malloc(sizeof(struct AnagramList));
 
 	// if allocation doesn't work, print error and exit
@@ -153,9 +159,11 @@ struct AnagramList* MallocAList(char *word) {
         exit(-1);
     }
 
+    // call mallocslist for the words of this anagram node
     new_anali->Words = MallocSList(word);
     new_anali->Next = NULL;
 
+    // make the current word lowercase, sort it, and set it as the anagram
     word = makeLower(word);
     quickSort(word, 0, strlen(word) - 1);
     new_anali->Anagram = strdup(word);
@@ -168,78 +176,81 @@ void FreeAList(struct AnagramList **node) {
 	struct AnagramList *next;
 	struct AnagramList *current;
 	current = *node;
-	//while current != NULL save into next = current->next; freeslist(&(words)), free 
-	// current -> anagram; free (current), current = next;
-	// TODO: Valgrind/check frees
 
-	// (*node)->Words == StringList*
-	// this only frees words
+	// while there's more anagrams
 	while(current != NULL) {
+		// save into next the current node's next so we don't lose the reference
 		next = current->Next;
+		// free the stringlist of the anagram
 		FreeSList(&(current->Words));
+		// free the anagram and the anagramlist
 		free(current->Anagram);
 		free(current);
+		// set current to the temp node next
 		current = next;
 	} 
 }
 
-// Format output to a file, print anagram list with words, according to spec
+// print anagram list with words, according to spec
 void PrintAList(FILE *file, struct AnagramList *node) {
-	// TODO: PRINT/CHECK if file can open/write {
-	while(node) {
+	// while an anagramlist exists
+	while(node != NULL) {
+		// print it only if there are more than one word in the anagramlist
 		if(SListCount(node->Words) > 1) {
+			// print the anagram with a colon, word count, and newline
 			fprintf(file, "%s:%d\n", node->Anagram, SListCount(node->Words));
+			// print all the words in the anagram
 			PrintSList(file, node->Words);
-			
 		}
+		// make the node the node's next to print the next anagram
 		node = node->Next;
 	}
-}
-
-
-// return the word lowercased
-char *makeLower(char *word) {
-	int i;
-	for(i = 0; i < strlen(word); i++){
-		word[i] = tolower(word[i]);
-	}
-	return word;
 }
 
 /*
 1) Add a new word to the anagram list
 2) Will create an AnagramList if (*node) is null (first time it will be!)
 3) Make sure anagram is stored and sorted in lower case
-make sure it compares a lower case version of the word (easier if word is sorted!)
+make sure it compares a lower case version of the word
 4) Store word with proper case and don't sort word 
-to do that, make copy of string and free it after usage to do it correctly
-5) NEED to implement a function to "uncapitalize" a character array and a function 
-to sort the character array (use quicksort and cite)
-6) MAKE WORD IN ANAGRAM POINT TO NEXT
+6) Make word in Anagramlist point to next
 */
 void AddWordAList(struct AnagramList **node, char *word) {
 	// if anagramlist is empty, create a new anagramlist to add word
 	if(*node == NULL) {
+		// malloc the new anagramlist with word and set it equal to node
 		struct AnagramList *new = MallocAList(word);
 		*node = new;
 	}
 	else {
-		// compare by lowercasing and sorting here also
+		// else save temp vars to the node
 		struct AnagramList *current = *node;
 		struct AnagramList *prev = *node;
 
+		// duplicate word so we don't mess up the original with
+		// lowercasing and sorting
+		// use to_compword to compare to other anagrams
 		char *to_compword = strdup(word);
 		to_compword = makeLower(to_compword);
-
 		quickSort(to_compword, 0, strlen(to_compword) - 1);
+
+		// use this int as a boolean. If it's 0, then the word wasn't
+		// added to a current anagram (so make a new anagramlist)
 		int boolean = 0;
 		
-		while(current) {
+		// while current node exists
+		while(current != NULL) {
+			// if the current word to add (sorted and lowercased)
+			// is the same as the current node's anagram, create
+			// a new stringlist with the original word and append
+			// it to the current family (and set boolean as 1)
 			if(strcmp(to_compword, current->Anagram) == 0) {
 				struct StringList *newstrli = MallocSList(word);
 				AppendSList(&(current->Words), newstrli);
 				boolean = 1;
 			}
+			// set previous node to current and current to 
+			// current-> Next so we can keep going
 			prev = current;
 			current = current->Next;
 		}
@@ -248,9 +259,7 @@ void AddWordAList(struct AnagramList **node, char *word) {
 			struct AnagramList *newanali = MallocAList(word);
 			prev->Next = newanali;
 		}
+		// free the duplicated (and altered) word
 		free(to_compword);
 	}
-	// if it's not empty, see if it's in an anagram family, if it isn't 
-	// create a new anagram family and do same as above
-	// printf("%s\n", "HERE!");
 }
