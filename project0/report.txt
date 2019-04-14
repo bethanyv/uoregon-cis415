@@ -1,0 +1,9 @@
+Bethany Van Meter, bvanmet2, CIS 415 Project 0
+
+The state of my submission is overall finished. I have no memory leaks and it
+ runs with an empty file, runs with expected input, and will handle the cases
+  of too many arguments. I think my solution is overall organized and 
+  documented well. I used the partition, swap, and quicksort algorithm from 
+  GeeksforGeeks.com and credited them on those functions. 
+
+I think overall I am very pleased with my submission and always know there;s more I can do better, but think my work I did is pretty good and I am proud of it. It handles the cases I can think of.
