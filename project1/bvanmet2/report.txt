@@ -1,0 +1,11 @@
+Bethany Van Meter
+bvanmet2
+CIS 415 Project 1
+
+My project is only complete with part1 and part2. I was out of town this last week and could not complete part3 or part4. Part3 I started and feel like I could've done/understood well, I just didn't manage my time well enough.
+
+Anyway, part1 and part2 have no memory leaks and run how I believe they are supposed to. There are no warnings when they compile and complete running. Part3 has the base parts set up (the state enum and global PCB structure) and all I needed to do was implement (which yes, it the hardest part, but it was started). 
+
+The parts cover bad input and run the good input correctly also. Part3 has no warnings when it compiles also (along with part4). 
+
+I used the psuedocode provided from Piazza to work on stuff and included links to sites where I got help with alarms on part2.

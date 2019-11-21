@@ -1,0 +1,196 @@
+// Bethany Van Meter; bvanmet2; CIS 415 Project 0
+// this is my own work except:
+// the makefile and header file (from 415 class material)
+// https://www.geeksforgeeks.org/quick-sort/ for quicksort methods
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "project1.h"
+
+// read file into process structs
+// launch process structures
+// send all process signals
+// send all process stop
+// send all process start
+// wait for children to exit
+
+// Program struct with char *command, char **[cmd + args], PID, *Program = NULL;
+// Cmd -> cat
+// Cmd args =-> [cat, name.txt]
+
+Run = 0;
+total_processes = 0;
+
+struct Command *command = NULL;
+
+loop through how many lines of commands there are to get count (int getNumPrograms(char *filename))
+			// fgets()
+
+int getWordinLine(*char) -> same thing as getNumPrograms except use strtok() -> need another buffer buffer2[1024]
+
+void constructPCB(char *filename) -> use getNumPrograms and allocate number of structs based on program count
+			increment = 0;
+			int numwords;
+			while(fgets(line, sizeof(line), fname) != NULL) {
+				int index = 0;
+				int i = 0;
+				char word[1024];
+				int len = 0;
+				len = strlen(line);
+					if end of line = \n, set line[len -1] = '\0'
+
+				getword by strtok() again
+				pcb[increment].cmd -> duplicate into word;
+				numwords = getwordsinline(line);
+				while(i = strtok() > 0)
+					pcb[increment].args[index++] = duplicate word 
+				pcb[increment].Args[index] = NULL
+				pcb[increment].status = notstarted defined above
+				pcb[increment].PID = -1
+				increment++;
+			// }
+			close file
+
+void siguser1_handler(int signum) {
+	printf(Enter: __FUNCTION__)
+	Run = 1;
+	printf(Exit: __FUNCTION__)
+}
+
+void cleanupPCB() {
+	int i = 0;
+	printf("Enter:" __FUNCTION__)
+
+	for(i = 0; i < total_processes; i++) {
+		print(current i value)
+		free(pcb[i].cmd)
+
+		int j = 0;
+		while(pcb[i].args[j] != NULL){
+			free(pcb[i].args[j]);
+			++j;
+			printf(deleted)
+		}
+		free(pcb[i].args);
+	}
+	free(pcb)
+	printf(exit)
+}
+
+void waitForChildren() {
+	printf(Enter: __FUNCTION__)
+	int i;
+	int status = 0;
+	for(i = 0; i < total_processes; i++) {
+		printf("WAITING: ", i, total_processes);
+		wait(&status);
+		printf("%s\n", "child exited");
+	}
+	printf("EXIT:", __FUNCTION__);
+}
+
+void WaitandExecOrCleanup(struct PCB *prgm) {
+	printf("ENTER")
+	execvp(prgm->cmd, prgm->args);
+	int result = 0;
+	printf("%s\n", "FAILED EXECVP COMMAND");
+	cleanupPCB();
+	exit(0);
+
+	printf("EXIT:", __FUNCTION__);
+}
+
+void LaunchProcess(struct PCB *launch) {
+	printf("ENTER", __FUNCTION__);
+
+	launch->PID = fork();
+	if(launch->PID < 0) {
+		printf("Fork Failed");
+		cleanupPCB();
+		exit(0);
+	}
+	if(launch->PCB == 0) {
+		WaitandExecOrCleanup(launch);
+	}
+	printf("EXIT:", __FUNCTION__);
+}
+
+void LaunchAllProcess() {
+	printf("ENTER", __FUNCTION__);
+
+	signal(SIGUSER1, siguser1_handler);
+	int i = 0;
+	for(i = 0; i < total_processes; i ++) {
+		print(launching %d\n, i)
+		LaunchProcess(&pcb[i]);
+	}
+	signal(SIGUSER1, SIG_DFL);
+	printf("EXIT:", __FUNCTION__);
+}
+
+void sendAllSig1(struct PCB *prgm) {
+	int i = 0;
+	pid_t send;
+	sleep(1);
+	for(i = 0; i < total_processes; i++) {
+		send = prgm[i].PID;
+		kill(send, SIGUSR1);
+	}
+}
+
+void stopAllSigStop(struct PCB *prgm) {
+	int i = 0;
+	pid_t send;
+	for(i = 0; i < total_processes; i++) {
+		send = prgm[i].PID;
+		kill(send, SIGSTOP);
+	}
+}
+
+void continueALL(struct PCB *prgm) {
+	int i = 0;
+	pid_t send;
+	for(i = 0; i < total_processes; i++) {
+		send = prgm[i].PID;
+		kill(send, SIGCONT);
+	}
+}
+
+int main(int argc,char *argv[])
+
+{
+
+    // ensure argc/argv have correct # and file exists.
+    if(argc != 2) {
+    	exit(-1);
+    }
+    if(argc == 2) {
+    	if(access(argv[1], F_OK) != -1) {
+
+    	}
+    	else{
+    			exit(-1)
+    		}
+    }
+
+    constructPCB(argv[1]);
+    LaunchAllProcess();
+    print(AFTER ALL LAUNCH)
+
+    sendAllSig1(pcb)
+    stopAllSigStop(pcb)
+    continueALL(pcb)
+
+    print(WAIT BEFORE ALL CHILDREN)
+    waitForChildren();
+    cleanupPCB();
+
+    // char *file_name = argv[1];
+
+    // PCB *programs = MakeProcessControlBlocks(file_name);
+
+    // LaunchAllPrograms(programs);
+
+    // WaitForAllProgramsExit(programs);
+
+}

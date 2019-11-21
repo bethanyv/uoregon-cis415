@@ -1,0 +1,25 @@
+Bethany Van Meter
+
+This file describes the other files contained in this folder.
+
+part1.h
+    This file just includes the define variables and the structs used in my parts of the project.
+
+part1.c
+    This file runs exactly like the piazza post says. It makes a topic queue and fills, empties, and prints, and getsentries as per spec. It prints out examples of what it is running.
+
+part2.c 
+    This file was a work in progress of part2. I made threads and added to my part1 implementation. I couldn't get much to work completely and didn't know how I should show what I got working. Started threads publisher, subscriber, and delete for cleanup.
+
+Makefile:
+    built off of the given makefile. Added ways to make part1 and part2. (ex. just "make part1")
+
+
+To evaluate code: for part1, jsut run it. Main has the prints and examples of what is running.
+    
+    for part2, main again fills in whats going on. It only prints when it is inside of the threads/threads are running though. It prints the entries the subscriber is reading currently.
+
+
+I have run all the code I have explained on Arch VM
+
+I finished part1 and most of part2. Just didn't get the details of part2 completed completely.
